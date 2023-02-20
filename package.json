@@ -8,6 +8,7 @@
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
     "prepare": "husky install"
+    
   },
   "repository": {
     "type": "git",
