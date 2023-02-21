@@ -76,12 +76,9 @@ describe('app',() => {
                 .expect(200)
                 .then(({body})=>{
                 const reviewsV1 = body.reviews;
-
-                const sortedReviews = reviewsV1.sort((reviewsV1A, reviewsV1B)=>{
-                return reviewsV1A.created_at - reviewsV1B.created_at;
-               })
-                expect(sortedReviews).toEqual(reviewsV1);
-                expect(sortedReviews).toHaveLength(13);
+                
+                expect(reviewsV1).toBeSortedBy('created_at', {descending: true})
+                expect(reviewsV1).toHaveLength(13);
             })
         })
         test('404: responds with path not found if incorrect path ', ()=>{
