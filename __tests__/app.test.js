@@ -91,4 +91,44 @@ describe('app',() => {
             })
         })
     })
+    describe('/api/reviews/:review_id', ()=>{
+        test('200: responds with a review object with the pathway of review ID', ()=>{
+            return request(app)
+            .get('/api/reviews/2')
+            .expect(200)
+            .then(({body})=>{
+            const reviewsV1 = body.reviewsID;
+            
+            expect(typeof reviewsV1).toBe('object')
+            reviewsV1.forEach((category)=>{
+                expect(category).toHaveProperty('owner', expect.any(String));
+                expect(category).toHaveProperty('title', expect.any(String));
+                expect(category).toHaveProperty('review_id', expect.any(Number));
+                expect(category).toHaveProperty('category', expect.any(String));
+                expect(category).toHaveProperty('review_img_url', expect.any(String));
+                expect(category).toHaveProperty('created_at', expect.any(String));
+                expect(category).toHaveProperty('votes', expect.any(Number));
+                expect(category).toHaveProperty('designer', expect.any(String));
+                expect(category).toHaveProperty('review_body', expect.any(String));
+            })
+            }) 
+        })
+        test('400: responds to invalid review ID', ()=>{
+            return request(app)
+                .get('/api/reviews/cantbelieveitsnotanumber')
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+        test('404: responds to valid but non existent review ID ', ()=>{
+            return request(app)
+                .get('/api/reviews/101')
+                .expect(404)
+                .then(({body})=>{
+                    console.log(body)
+                expect(body.msg).toBe('review_id not found')
+            })
+        })
+    })
 })

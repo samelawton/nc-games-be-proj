@@ -22,3 +22,18 @@ exports.fetchReviews = () => {
         return result.rows;
     })
 }
+
+exports.fetchReviewsID = (review_id) => {
+    let queryStr = `
+    SELECT review_id, title, review_body, designer, review_img_url, votes, category, owner, created_at
+    FROM reviews
+    WHERE review_id = $1
+
+    `;
+    return db.query(queryStr, [review_id]).then((result)=>{
+        if(result.rowCount === 0){
+            return Promise.reject({status: 404, msg:'review_id not found'});
+        }
+        return result.rows;
+    })
+}
