@@ -27,10 +27,10 @@ exports.getReviewsID = (request, response, next) => {
     
     fetchReviewsID(review_id)
     .then((reviewsID)=>{
-        response.status(200).send({reviewsID});
+        response.status(200).send({review: reviewsID});
     })
     .catch((error)=>{
-        console.log(error)
+        
         next(error);
     })
 }
