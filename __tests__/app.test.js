@@ -91,4 +91,45 @@ describe('app',() => {
             })
         })
     })
+    describe('/api/reviews/:review_id', ()=>{
+        test('200: responds with a review object with the pathway of review ID', ()=>{
+            return request(app)
+            .get('/api/reviews/2')
+            .expect(200)
+            .then(({body})=>{
+              
+            const reviewsV1 = body.review[0];
+            console.log(reviewsV1)
+            expect(typeof reviewsV1).toBe('object')
+            expect(reviewsV1).toMatchObject({
+                owner: expect.any(String),
+                title: expect.any(String),
+                review_id : expect.any(Number),
+                category : expect.any(String),
+                review_img_url : expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                designer: expect.any(String),
+                review_body: expect.any(String)
+            });
+            
+            }) 
+        })
+        test('400: responds to invalid review ID', ()=>{
+            return request(app)
+                .get('/api/reviews/cantbelieveitsnotanumber')
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+        test('404: responds to valid but non existent review ID ', ()=>{
+            return request(app)
+                .get('/api/reviews/101')
+                .expect(404)
+                .then(({body})=>{
+                expect(body.msg).toBe('review_id not found')
+            })
+        })
+    })
 })
