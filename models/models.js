@@ -55,3 +55,16 @@ exports.fetchComments = (review_id) =>{
         return result.rows;
     })
 }
+
+exports.insertComments = (reviewID, comment) =>{
+    let queryStr = `
+    INSERT INTO comments (author, body, review_id)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+    `;
+    return db.query(queryStr, [comment.username, comment.body, reviewID])
+    .then((result)=>{
+        console.log(result)
+        return result.rows;
+    })
+}
