@@ -55,3 +55,19 @@ exports.fetchComments = (review_id) =>{
         return result.rows;
     })
 }
+
+exports.insertComments = (reviewID, comment) =>{
+    let queryStr = `
+    INSERT INTO comments (author, body, review_id)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+    `;
+    return db.query(queryStr, [comment.username, comment.body, reviewID])
+    .then((result)=>{
+        if(result.rowCount === 0){
+            return Promise.reject({status: 404, msg:'review_id not found'});
+        }
+    
+        return result.rows;
+    })
+}

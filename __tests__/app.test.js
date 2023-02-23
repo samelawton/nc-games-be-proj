@@ -14,7 +14,7 @@ afterAll(() => {
 
 
 describe('app',() => {
-    describe('/api/categories', () => {
+    describe('GET- /api/categories', () => {
         test('200: GET responds with an array of category objects with slug and description properties', ()=>{
             return request(app)
             .get('/api/categories')
@@ -33,7 +33,7 @@ describe('app',() => {
             })
         })
     })
-    describe('/api/reviews', ()=>{
+    describe('GET- /api/reviews', ()=>{
         test('200: responds with a joined array of review objects to comments table', ()=>{
                 return request(app)
                 .get('/api/reviews')
@@ -91,7 +91,7 @@ describe('app',() => {
             })
         })
     })
-    describe('/api/reviews/:review_id', ()=>{
+    describe('GET- /api/reviews/:review_id', ()=>{
         test('200: responds with a review object with the pathway of review ID', ()=>{
             return request(app)
             .get('/api/reviews/2')
@@ -99,7 +99,7 @@ describe('app',() => {
             .then(({body})=>{
               
             const reviewsV1 = body.review[0];
-            console.log(reviewsV1)
+           
             expect(typeof reviewsV1).toBe('object')
             expect(reviewsV1).toMatchObject({
                 owner: expect.any(String),
@@ -132,7 +132,7 @@ describe('app',() => {
             })
         })
     })
-    describe.only('/api/reviews/:review_id/comments', ()=>{
+    describe('GET- /api/reviews/:review_id/comments', ()=>{
         test('200: Responds with an array of comments for the given review_id', ()=>{
             return request(app)
             .get('/api/reviews/2/comments')
@@ -178,5 +178,84 @@ describe('app',() => {
             })
         })
         
+    })
+    describe('POST- /api/reviews/:review_id/comments', ()=>{
+        test('201: accepts an object with properties username and body, also responds with the posted comment', ()=>{
+            const newComment = {
+                username: 'dav3rid',
+                body: 'this game made my feet hurt and caused a family argument'
+            };
+            return request(app)
+            .post('/api/reviews/3/comments')
+            .send(newComment)
+            .expect(201)
+            .then(({body})=>{
+                const comment = body.commentInfo;
+        
+                expect(comment).toHaveLength(1);
+                expect(comment[0]).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author : expect.any(String),
+                    review_id : expect.any(Number),
+                    created_at : expect.any(String)
+                })
+                expect(comment[0].body).toBe('this game made my feet hurt and caused a family argument');
+                expect(comment[0].author).toBe('dav3rid');
+            })
+        })
+        test('400: responds to invalid review ID', ()=>{
+            const newComment = {
+                username: 'dav3rid',
+                body: 'this game made my feet hurt and caused a family argument'
+            };
+            return request(app)
+                .post('/api/reviews/idontlikeantanddec/comments')
+                .send(newComment)
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+        test('404: responds to valid but non existent review ID ', ()=>{
+            const newComment = {
+                username: 'dav3rid',
+                body: 'this game made my feet hurt and caused a family argument'
+            };
+            return request(app)
+                .post('/api/reviews/103/comments')
+                .send(newComment)
+                .expect(404)
+                .then(({body})=>{
+                expect(body.msg).toBe('not found')
+            })
+        })
+        test('404: responds to a non existent username ', ()=>{
+            const newComment = {
+                username: 'leroy_jenkins',
+                body: 'LEROYYYYYYYYY JEEEEEEENKIIIIINS'
+            };
+            return request(app)
+                .post('/api/reviews/3/comments')
+                .send(newComment)
+                .expect(404)
+                .then(({body})=>{
+                expect(body.msg).toBe('not found')
+            })
+        })
+        test('400: responds to a missing required field ', ()=>{
+            const newComment = {
+                username: 'no_comment'
+            };
+            return request(app)
+                .post('/api/reviews/3/comments')
+                .send(newComment)
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+    
     })
 })
