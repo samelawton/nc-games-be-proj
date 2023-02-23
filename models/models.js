@@ -37,3 +37,21 @@ exports.fetchReviewsID = (review_id) => {
         return result.rows;
     })
 }
+
+exports.fetchComments = (review_id) =>{
+    let queryStr = `
+    SELECT comment_id, comments.votes, comments.created_at, author, body, comments.review_id
+    FROM comments
+    LEFT JOIN reviews
+    ON comments.review_id = reviews.review_id 
+    WHERE reviews.review_id = $1
+    GROUP BY comments.comment_id
+    ORDER BY comments.created_at DESC;
+    `;
+    return db.query(queryStr, [review_id]).then((result)=>{
+        if(result.rowCount === 0){
+            return Promise.reject({status: 404, msg:'review_id not found'});
+        }
+        return result.rows;
+    })
+}

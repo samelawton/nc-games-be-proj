@@ -1,5 +1,5 @@
 const reviews = require('../db/data/test-data/reviews');
-const { fetchCategories, fetchReviews, fetchReviewsID } = require('../models/models')
+const { fetchCategories, fetchReviews, fetchReviewsID, fetchComments } = require('../models/models')
 
 
 exports.getCategories = (request, response, next)=>{
@@ -30,7 +30,18 @@ exports.getReviewsID = (request, response, next) => {
         response.status(200).send({review: reviewsID});
     })
     .catch((error)=>{
-        
+        next(error);
+    })
+}
+
+exports.getComments = (request, response, next) => {
+    const { review_id }  = request.params;
+    
+    fetchComments(review_id) 
+    .then((reviewsID)=>{
+        response.status(200).send({review: reviewsID});
+    })
+    .catch((error)=>{
         next(error);
     })
 }
