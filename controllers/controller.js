@@ -47,8 +47,10 @@ exports.getComments = (request, response, next) => {
 }
 
 exports.postComments = (request, response, next) =>{
+   
     const { review_id } = request.params;
     const comment = request.body;
+    
    
     insertComments(review_id, comment)
     .then((commentInfo)=>{

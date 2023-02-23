@@ -64,7 +64,10 @@ exports.insertComments = (reviewID, comment) =>{
     `;
     return db.query(queryStr, [comment.username, comment.body, reviewID])
     .then((result)=>{
-        console.log(result)
+        if(result.rowCount === 0){
+            return Promise.reject({status: 404, msg:'review_id not found'});
+        }
+    
         return result.rows;
     })
 }
