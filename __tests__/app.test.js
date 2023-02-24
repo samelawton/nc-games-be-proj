@@ -70,7 +70,7 @@ describe('app',() => {
         })
         test('200: sorts by date in descending order', ()=>{
             return request(app)
-                .get('/api/reviews?sort_by=created_date')
+                .get('/api/reviews?sort_by=created_at')
                 .expect(200)
                 .then(({body})=>{
                 const reviewsV1 = body.reviews;
@@ -346,5 +346,42 @@ describe('app',() => {
 
             })
         })
+    })
+    describe('task 10 GET: /api/reviews (queries)', ()=>{
+        test('200: responds to query by category', ()=>{
+
+            return request(app)
+                .get('/api/reviews?category=dexterity')
+                .expect(200)
+                .then(({body})=>{
+                const categoryReviewsV1 = body.reviews;
+                console.log(body.reviews)
+                expect(categoryReviewsV1).toHaveLength(1)
+                expect(categoryReviewsV1[0]).toMatchObject({
+                    owner: expect.any(String),
+                    title: expect.any(String),
+                    review_id: expect.any(Number),
+                    category: expect.any(String),
+                    review_img_url: expect.any(String),
+                    created_at: expect.any(String),
+                    votes : expect.any(Number),
+                    designer : expect.any(String),
+                    comment_count: expect.any(String)
+                })
+            })
+        })
+        test('200: responds to query for sort by', ()=>{
+
+            return request(app)
+                .get('/api/reviews?sort_by=votes')
+                .expect(200)
+                .then(({body})=>{
+                const reviewsV1 = body.reviews;
+                
+                expect(reviewsV1).toHaveLength(13)
+                expect(reviewsV1).toBeSortedBy('votes', {descending: true})
+            })
+        })
+        //need to add order test - task 10
     })
 })

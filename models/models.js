@@ -8,17 +8,35 @@ exports.fetchCategories = () =>{
     
 }
 
-exports.fetchReviews = () => {
+exports.fetchReviews = (categoryField, sortByField) => {
+    const queryParams = [];
     let queryStr = `
     SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT (body) AS comment_count 
     FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;
     `;
-    return db.query(queryStr).then((result)=>{
-        
+    if(categoryField !== undefined){
+        console.log('hello')
+        queryStr += `
+        WHERE reviews.category = $1
+        GROUP BY reviews.review_id
+        ORDER BY reviews.created_at DESC;
+        `;
+        queryParams.push(categoryField);
+       
+    } 
+    else if(sortByField !== undefined){
+        queryStr += `GROUP BY reviews.review_id
+        ORDER BY reviews.${sortByField} DESC;`;
+       
+    } 
+    else {
+        queryStr += `GROUP BY reviews.review_id
+        ORDER BY reviews.created_at DESC;`
+    }
+    
+    return db.query(queryStr, queryParams).then((result)=>{
         return result.rows;
     })
 }
@@ -98,3 +116,4 @@ exports.fetchUsers = () =>{
     })
 
 }
+

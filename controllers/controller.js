@@ -14,7 +14,10 @@ exports.getCategories = (request, response, next)=>{
 }
 
 exports.getReviews = (request, response, next) => {
-    fetchReviews()
+    const sortByField = request.query.sort_by;
+    const categoryField = request.query.category;
+
+    fetchReviews(categoryField, sortByField)
     .then((reviews)=>{
         response.status(200).send({reviews});
     })
