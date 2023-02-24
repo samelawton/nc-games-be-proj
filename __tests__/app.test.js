@@ -329,6 +329,7 @@ describe('app',() => {
                  const users = body.users;
                  
                  expect(Array.isArray(users));
+                 expect(users).toHaveLength(4)
                  users.forEach((category)=>{
                     expect(category).toHaveProperty('username', expect.any(String));
                     expect(category).toHaveProperty('name', expect.any(String));
