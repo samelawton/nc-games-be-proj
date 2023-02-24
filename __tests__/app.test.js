@@ -42,8 +42,6 @@ describe('app',() => {
 
                     const reviewsV1 = body.reviews;
 
-                    // console.log(reviewsV1)
-
                     expect(Array.isArray(reviewsV1));
                     expect(reviewsV1).toHaveLength(13);
                 })
@@ -319,6 +317,33 @@ describe('app',() => {
                 .expect(400)
                 .then(({body})=>{
                 expect(body.msg).toBe('bad request')
+            })
+        })
+    })
+    describe('GET: /api/users', ()=>{
+        test('200: responds with an array of objects about the user', ()=>{
+            return request(app)
+                .get('/api/users')
+                .expect(200)
+                .then(({body})=>{
+                 const users = body.users;
+                 
+                 expect(Array.isArray(users));
+                 expect(users).toHaveLength(4)
+                 users.forEach((category)=>{
+                    expect(category).toHaveProperty('username', expect.any(String));
+                    expect(category).toHaveProperty('name', expect.any(String));
+                    expect(category).toHaveProperty('avatar_url', expect.any(String));
+                })
+                })
+        })
+        test('404: responds with path not found if incorrect path ', ()=>{
+            return request(app)
+                .get('/api/noooooooo_path')
+                .expect(404)
+                .then(({body})=>{
+                expect(body.msg).toEqual('path not found')
+
             })
         })
     })

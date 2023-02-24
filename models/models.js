@@ -86,6 +86,15 @@ exports.voteChange = (reviewID, voteInfo) => {
         }
         return result.rows;
     })
+}
 
+exports.fetchUsers = () =>{
+    let queryStr = `
+        SELECT * FROM users;
+    `;
+    return db.query(queryStr)
+    .then((result)=>{
+        return result.rows;
+    })
 
 }

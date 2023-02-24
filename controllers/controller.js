@@ -1,5 +1,6 @@
+const { response } = require('../app');
 const reviews = require('../db/data/test-data/reviews');
-const { fetchCategories, fetchReviews, fetchReviewsID, fetchComments, insertComments, voteChange } = require('../models/models')
+const { fetchCategories, fetchReviews, fetchReviewsID, fetchComments, insertComments, voteChange, fetchUsers } = require('../models/models')
 
 
 exports.getCategories = (request, response, next)=>{
@@ -67,6 +68,17 @@ exports.updateVotes = (request, response, next) => {
     voteChange(review_id, votesInfo)
     .then((votesInfo)=>{
         response.status(201).send({votesInfo})
+    })
+    .catch((error)=>{
+        next(error);
+    })
+}
+
+exports.getUsers = (request, response, next) => {
+
+    fetchUsers()
+    .then((users)=>{
+        response.status(200).send({users})
     })
     .catch((error)=>{
         next(error);
