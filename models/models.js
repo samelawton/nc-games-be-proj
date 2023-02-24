@@ -71,3 +71,18 @@ exports.insertComments = (reviewID, comment) =>{
         return result.rows;
     })
 }
+
+exports.voteChange = (reviewID, voteInfo) => {
+    let queryStr = `
+    UPDATE reviews
+    SET votes = votes + $1
+    WHERE review_id = $2
+    RETURNING *;
+    `;
+    return db.query(queryStr, [voteInfo, reviewID])
+    .then((result)=>{
+        return result.rows;
+    })
+
+
+}

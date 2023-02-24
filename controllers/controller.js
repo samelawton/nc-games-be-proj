@@ -1,5 +1,5 @@
 const reviews = require('../db/data/test-data/reviews');
-const { fetchCategories, fetchReviews, fetchReviewsID, fetchComments, insertComments } = require('../models/models')
+const { fetchCategories, fetchReviews, fetchReviewsID, fetchComments, insertComments, voteChange } = require('../models/models')
 
 
 exports.getCategories = (request, response, next)=>{
@@ -47,14 +47,25 @@ exports.getComments = (request, response, next) => {
 }
 
 exports.postComments = (request, response, next) =>{
-   
     const { review_id } = request.params;
     const comment = request.body;
     
-   
     insertComments(review_id, comment)
     .then((commentInfo)=>{
         response.status(201).send({commentInfo})
+    })
+    .catch((error)=>{
+        next(error);
+    })
+}
+
+exports.updateVotes = (request, response, next) => {
+    
+    const { review_id } = request.params;
+    const votesInfo = request.body.inc_votes;
+    voteChange(review_id, votesInfo)
+    .then((votesInfo)=>{
+        response.status(201).send({votesInfo})
     })
     .catch((error)=>{
         next(error);
