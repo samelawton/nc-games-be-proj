@@ -258,4 +258,68 @@ describe('app',() => {
         })
     
     })
+
+    describe('PATCH- /api/reviews/:review_id', ()=>{
+        test('201: responds with updated number of votes', ()=>{
+            const voteUpdate = {
+                inc_votes: 7
+            };
+            return request(app)
+                .patch('/api/reviews/1')
+                .send(voteUpdate)
+                .expect(201)
+                .then(({body})=>{
+                    const voteInfo = body.votesInfo[0]
+                    const voteNum = body.votesInfo[0].votes;
+                    expect(voteNum).toEqual(8);
+                    expect(voteInfo).toMatchObject({
+                        review_id: expect.any(Number),
+                        title: expect.any(String),
+                        category: expect.any(String),
+                        designer : expect.any(String),
+                        owner : expect.any(String),
+                        review_body : expect.any(String),
+                        review_img_url : expect.any(String),
+                        created_at : expect.any(String),
+                        votes : expect.any(Number)
+                })
+                })
+        })
+        test('400: responds to invalid review ID', ()=>{
+            const voteUpdate = {
+                inc_votes: 7
+            };
+            return request(app)
+                .patch('/api/reviews/qwerty')
+                .send(voteUpdate)
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+        test('404: responds to valid but non existent review ID ', ()=>{
+            const voteUpdate = {
+                inc_votes: 7
+            };
+            return request(app)
+                .patch('/api/reviews/105')
+                .send(voteUpdate)
+                .expect(404)
+                .then(({body})=>{
+                expect(body.msg).toBe('review_id not found')
+            })
+        })
+        test('400: responds to incorrect body type being requested', ()=>{
+            const voteUpdate = {
+                inc_votes: 'Not a num'
+            };
+            return request(app)
+                .patch('/api/reviews/1')
+                .send(voteUpdate)
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+            })
+        })
+    })
 })
