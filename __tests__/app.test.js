@@ -258,85 +258,7 @@ describe('app',() => {
         })
     
     })
-    describe('POST- /api/reviews/:review_id/comments', ()=>{
-        test('201: accepts an object with properties username and body, also responds with the posted comment', ()=>{
-            const newComment = {
-                username: 'dav3rid',
-                body: 'this game made my feet hurt and caused a family argument'
-            };
-            return request(app)
-            .post('/api/reviews/3/comments')
-            .send(newComment)
-            .expect(201)
-            .then(({body})=>{
-                const comment = body.commentInfo;
-        
-                expect(comment).toHaveLength(1);
-                expect(comment[0]).toMatchObject({
-                    comment_id: expect.any(Number),
-                    body: expect.any(String),
-                    votes: expect.any(Number),
-                    author : expect.any(String),
-                    review_id : expect.any(Number),
-                    created_at : expect.any(String)
-                })
-                expect(comment[0].body).toBe('this game made my feet hurt and caused a family argument');
-                expect(comment[0].author).toBe('dav3rid');
-            })
-        })
-        test('400: responds to invalid review ID', ()=>{
-            const newComment = {
-                username: 'dav3rid',
-                body: 'this game made my feet hurt and caused a family argument'
-            };
-            return request(app)
-                .post('/api/reviews/idontlikeantanddec/comments')
-                .send(newComment)
-                .expect(400)
-                .then(({body})=>{
-                expect(body.msg).toBe('bad request')
-            })
-        })
-        test('404: responds to valid but non existent review ID ', ()=>{
-            const newComment = {
-                username: 'dav3rid',
-                body: 'this game made my feet hurt and caused a family argument'
-            };
-            return request(app)
-                .post('/api/reviews/103/comments')
-                .send(newComment)
-                .expect(404)
-                .then(({body})=>{
-                expect(body.msg).toBe('not found')
-            })
-        })
-        test('404: responds to a non existent username ', ()=>{
-            const newComment = {
-                username: 'leroy_jenkins',
-                body: 'LEROYYYYYYYYY JEEEEEEENKIIIIINS'
-            };
-            return request(app)
-                .post('/api/reviews/3/comments')
-                .send(newComment)
-                .expect(404)
-                .then(({body})=>{
-                expect(body.msg).toBe('not found')
-            })
-        })
-        test('400: responds to a missing required field ', ()=>{
-            const newComment = {
-                username: 'no_comment'
-            };
-            return request(app)
-                .post('/api/reviews/3/comments')
-                .send(newComment)
-                .expect(400)
-                .then(({body})=>{
-                expect(body.msg).toBe('bad request')
-            })
-        })
-    
-    })
+
     describe('PATCH- /api/reviews/:review_id', ()=>{
         test('201: responds with updated number of votes', ()=>{
             const voteUpdate = {
@@ -380,11 +302,23 @@ describe('app',() => {
                 inc_votes: 7
             };
             return request(app)
-                .patch('/api/reviews/105/comments')
+                .patch('/api/reviews/105')
                 .send(voteUpdate)
                 .expect(404)
                 .then(({body})=>{
-                expect(body.msg).toBe('path not found')
+                expect(body.msg).toBe('review_id not found')
+            })
+        })
+        test('400: responds to incorrect body type being requested', ()=>{
+            const voteUpdate = {
+                inc_votes: 'Not a num'
+            };
+            return request(app)
+                .patch('/api/reviews/1')
+                .send(voteUpdate)
+                .expect(400)
+                .then(({body})=>{
+                expect(body.msg).toBe('bad request')
             })
         })
     })

@@ -63,6 +63,7 @@ exports.updateVotes = (request, response, next) => {
     
     const { review_id } = request.params;
     const votesInfo = request.body.inc_votes;
+    
     voteChange(review_id, votesInfo)
     .then((votesInfo)=>{
         response.status(201).send({votesInfo})

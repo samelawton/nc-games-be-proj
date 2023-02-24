@@ -81,6 +81,9 @@ exports.voteChange = (reviewID, voteInfo) => {
     `;
     return db.query(queryStr, [voteInfo, reviewID])
     .then((result)=>{
+        if(result.rowCount === 0){
+            return Promise.reject({status: 404, msg:'review_id not found'});
+        }
         return result.rows;
     })
 
