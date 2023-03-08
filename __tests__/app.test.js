@@ -395,6 +395,7 @@ describe('app',() => {
                 const reviewsV1 = body.review[0];
                 expect(reviewsV1).toHaveProperty('comment_count')
                 expect(reviewsV1.comment_count).toBe('3');
+                
             })
         })
     })
