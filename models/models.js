@@ -8,26 +8,48 @@ exports.fetchCategories = () =>{
     
 }
 
-exports.fetchReviews = () => {
+exports.fetchReviews = (categoryField, sortByField) => {
+    const queryParams = [];
     let queryStr = `
     SELECT owner, title, reviews.review_id, category, review_img_url, reviews.created_at, reviews.votes, designer, COUNT (body) AS comment_count 
     FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;
     `;
-    return db.query(queryStr).then((result)=>{
-        
+    if(categoryField !== undefined){
+        console.log('hello')
+        queryStr += `
+        WHERE reviews.category = $1
+        GROUP BY reviews.review_id
+        ORDER BY reviews.created_at DESC;
+        `;
+        queryParams.push(categoryField);
+       
+    } 
+    else if(sortByField !== undefined){
+        queryStr += `GROUP BY reviews.review_id
+        ORDER BY reviews.${sortByField} DESC;`;
+       
+    } 
+    else {
+        queryStr += `GROUP BY reviews.review_id
+        ORDER BY reviews.created_at DESC;`
+    }
+    
+    return db.query(queryStr, queryParams).then((result)=>{
         return result.rows;
     })
 }
 
 exports.fetchReviewsID = (review_id) => {
+    
     let queryStr = `
-    SELECT review_id, title, review_body, designer, review_img_url, votes, category, owner, created_at
+    SELECT reviews.review_id, title, review_body, designer, review_img_url, reviews.votes, category, owner, reviews.created_at, COUNT (comments.body) AS comment_count 
     FROM reviews
-    WHERE review_id = $1
+    LEFT JOIN comments
+    ON comments.review_id = reviews.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;
 
     `;
     return db.query(queryStr, [review_id]).then((result)=>{
@@ -98,3 +120,4 @@ exports.fetchUsers = () =>{
     })
 
 }
+
