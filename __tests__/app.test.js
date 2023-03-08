@@ -382,6 +382,20 @@ describe('app',() => {
                 expect(reviewsV1).toBeSortedBy('votes', {descending: true})
             })
         })
+       
         //need to add order test - task 10
+    })
+    describe(' task 11 -GET /api/reviews/:review_id (comment count)', ()=>{
+        test('200: responds to review_id with total number of comments', ()=>{
+            return request(app)
+            .get('/api/reviews/3')
+            .expect(200)
+            .then(({body})=>{
+                console.log(body)
+                const reviewsV1 = body.review[0];
+                expect(reviewsV1).toHaveProperty('comment_count')
+                expect(reviewsV1.comment_count).toBe('3');
+            })
+        })
     })
 })
